@@ -8,24 +8,31 @@ angular.module('NarrowItDownApp', [])
 
 
 NarrowItDownController.$inject = ['MenuSearchService'];
-function NarrowItDownController (MenuSearchService) {
+function NarrowItDownController(MenuSearchService) {
   var narrow = this;
 
-  narrow.searchTerm = '';
-  
-  var promise = MenuSearchService.getMatchedMenuItems(searchTerm);
+  var foundItems = [];
 
-  promise.then(function (response) {
-    narrow.found = response.data;
-    console.log(narrow.found);
-  })
-  .catch(function (error) {
-    console.log("Something went terribly wrong.");
-  });
+  narrow.findItems = function(searchTerm) {
+      var promise = MenuSearchService.getMatchedMenuItems();
 
-  narrow.removeItem = function (itemIndex) {
-    narrow.found.splice(itemIndex, 1);
+      promise.then(function (response) {
+        for (var i = 0; i < response.data.menu_items.length; i++) {
+          if (response.data.menu_items[i].description.indexOf(searchTerm) !== -1) {
+            console.log(response.data.menu_items[i].description);
+            foundItems.push(response.data.menu_items[i]);
+          }
+        }
+        console.log(foundItems);
+        narrow.found = foundItems;
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
   };
+  // narrow.removeItem = function (itemIndex) {
+  //   narrow.found.splice(itemIndex, 1);
+  // };
 
 }
 
@@ -36,10 +43,7 @@ function MenuSearchService ($http) {
   service.getMatchedMenuItems = function(searchTerm) {
       var response = $http({
         method: "GET",
-        url: ("https://davids-restaurant.herokuapp.com/menu_items.json")
-        params: {
-           description: searchTerm
-        }
+        url: "https://davids-restaurant.herokuapp.com/menu_items.json",
       });
 
       return response;
