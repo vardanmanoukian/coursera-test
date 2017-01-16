@@ -11,28 +11,37 @@ NarrowItDownController.$inject = ['MenuSearchService'];
 function NarrowItDownController(MenuSearchService) {
   var narrow = this;
 
-  var foundItems = [];
+  narrow.searchTerm = "";
 
   narrow.findItems = function(searchTerm) {
-      var promise = MenuSearchService.getMatchedMenuItems();
+    var foundItems = [];
+
+    var promise = MenuSearchService.getMatchedMenuItems();
 
       promise.then(function (response) {
+        if (searchTerm != "") {
+        searchTerm = searchTerm.toLowerCase();
         for (var i = 0; i < response.data.menu_items.length; i++) {
           if (response.data.menu_items[i].description.indexOf(searchTerm) !== -1) {
-            console.log(response.data.menu_items[i].description);
             foundItems.push(response.data.menu_items[i]);
           }
         }
-        console.log(foundItems);
-        narrow.found = foundItems;
+      }
+      narrow.found = foundItems;
       })
       .catch(function (error) {
         console.log(error);
       })
+
+
   };
-  // narrow.removeItem = function (itemIndex) {
-  //   narrow.found.splice(itemIndex, 1);
-  // };
+
+
+  narrow.removeItem = function (itemIndex) {
+    console.log(itemIndex);
+    narrow.found.splice(itemIndex, 1);
+  };
+
 
 }
 
@@ -53,11 +62,14 @@ function MenuSearchService ($http) {
 
 function FoundItems() {
   var ddo = {
+    templateUrl: 'menuItems.html',
     scope: {
-      foundItems: '<',
+      found: '<',
+      search: '<',
       onRemove: '&'
     }
   }
+  return ddo;
 }
 
 

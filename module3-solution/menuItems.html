@@ -1,5 +1,8 @@
+<h3 ng-if="search">This is the menu of the {{search}}</h3>
 <ul>
-  <li ng-repeat="item in narrow.found">
-    {{ item.short_name }} {{ item.name }} {{item.description}}
+  <li ng-repeat="item in found">
+    <strong>{{ item.name }}</strong>, {{ item.short_name }}, <em>{{item.description}}</em>
+    <button ng-click="onRemove({index: $index});">Don't want this one!</button>
   </li>
 </ul>
+<div class="error" ng-if="!found.length">Nothing's found!</div>
